@@ -5,8 +5,12 @@ import {
   // Settings,
   LogOut,
   UserPlus,
-  RectangleEllipsis,
-  // MessageCircleMore,
+  MessageCircleMore,
+  Home,
+  Bug,
+  LogIn,
+  Key,
+  HelpCircle,
 } from "lucide-react"
 
 import {
@@ -25,20 +29,38 @@ import UserAvatar from './custom/user-avatar'
 import {Button} from './ui/button'
 
 const items = [
-  // {
-  //   label: 'Feedback',
-  //   value: '/feedback',
-  //   icon: MessageCircleMore,
-  // },
+  {
+    label: 'Home',
+    value: '/',
+    icon: Home,
+  },
+  {
+    label: 'Bugs',
+    value: '/bugs',
+    icon: Bug,
+  },
+  {
+    label: 'Feedback',
+    value: '/feedback',
+    icon: MessageCircleMore,
+  },
   {
     label: 'Change Password',
     value: '/change-password',
-    icon: RectangleEllipsis,
+    icon: Key,
   },
   {
     label: 'Forgot Password',
     value: '/forgot-password',
-    icon: RectangleEllipsis,
+    icon: HelpCircle,
+  },
+]
+
+const authItems = [
+  {
+    label: 'Login',
+    value: '/login',
+    icon: LogIn,
   },
   {
     label: 'Register',
@@ -71,6 +93,18 @@ export function NavUser() {
     });
   }
 
+  const renderAuthItems = () => {
+    return authItems.map((item) => {
+      const Icon = item.icon;
+      return (
+        <DropdownMenuItem key={item.value} onClick={() => router.push(item.value)}>
+          <Icon />
+          {item.label}
+        </DropdownMenuItem>
+      );
+    });
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -89,16 +123,18 @@ export function NavUser() {
             <UserAvatar user={user}/>
           </div>
         </DropdownMenuLabel>
-        {/* <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Settings />
-            Settings
-          </DropdownMenuItem>
-        </DropdownMenuGroup> */}
         <DropdownMenuSeparator />
-          {renderItems()}
-          <DropdownMenuSeparator />
+
+        {/* Main Navigation Pages */}
+        {renderItems()}
+
+        <DropdownMenuSeparator />
+
+        {/* Authentication Pages (for reference/quick access) */}
+        {renderAuthItems()}
+
+        <DropdownMenuSeparator />
+
         <DropdownMenuItem onClick={handleLogin}>
           <LogOut />
           Logout
