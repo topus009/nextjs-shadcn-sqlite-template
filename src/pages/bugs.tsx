@@ -7,8 +7,7 @@ const Users: React.FC<PageProps> = (props) => {
 
   return (
     <div className="flex min-h-page flex-col px-10 py-12">
-      <div className="w-full max-w-4xl">
-
+      <div className="w-full max-w-4xl container mx-auto">
       </div>
     </div>
   )

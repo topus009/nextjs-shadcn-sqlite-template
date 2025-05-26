@@ -5,7 +5,6 @@ declare module 'knex/types/tables' {
   interface Tables {
     users: User;
     'change-password-tokens': ChangePasswordTokens;
-
   }
 }
 
@@ -19,7 +18,7 @@ export const db = knex({
 export const getUsers = () => db("users").select('id', 'email', 'fullName', 'avatar');
 export const getUser = (email: string) => db("users").where("email", email);
 
-export const initializeTables = async () => {
+export async function initializeTables() {
   await db.schema.dropTableIfExists("users");
   await db.schema.dropTableIfExists("change-password-tokens");
 
@@ -45,4 +44,4 @@ export const initializeTables = async () => {
       table.string("changePasswordToken").notNullable();
     });
   }
-};
+}
