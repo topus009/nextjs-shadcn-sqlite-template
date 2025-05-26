@@ -8,29 +8,38 @@ import {sealData} from "iron-session";
 const resend = new Resend(process.env.RESEND_TOKEN);
 
 export default withSessionRoute(async (req, res) => {
-  if (req.method !== "POST") return res.status(405).send(ValidationResult.NotPost);
+  try {
+    if (req.method !== "POST") return res.status(405).send(ValidationResult.NotPost);
 
-  const requestedUser = req.body as User;
-  const email = requestedUser.email.toLowerCase();
-  const user = await getUser(email).first();
+    if (!req.body || !req.body.email) {
+      return res.status(400).send(ValidationResult.NotAllFieldsPassed);
+    }
 
-  if (!user) return res.status(400).send(ValidationResult.UserNotFound);
+    const requestedUser = req.body as User;
+    const email = requestedUser.email.toLowerCase();
+    const user = await getUser(email).first();
 
-  const changePasswordToken = await sealData(email, { password: process.env.CHANGE_PASSWORD_SECRET });
+    if (!user) return res.status(400).send(ValidationResult.UserNotFound);
 
-  const template = await EmailTemplate({ href: `http://localhost:3000/change-password?token=${changePasswordToken}` });
-  await db("change-password-tokens").insert({ email, changePasswordToken });
-  const {error } = await resend.emails.send({
-    from: 'Acme <onboarding@resend.dev>',
-    to: [process.env.RESEND_MAIL_TO],
-    subject: 'Change password Magic Link',
-    react: template,
-  });
+    const changePasswordToken = await sealData(email, { password: process.env.CHANGE_PASSWORD_SECRET });
 
-  if (error) {
-    const isResendFailedConnectionError = error.message === 'API key is invalid';
-    return res.status(400).send(isResendFailedConnectionError ? ValidationResult.ResendConnectionError : ValidationResult.ResendUnhandledError);
+    const template = await EmailTemplate({ href: `http://localhost:3000/change-password?token=${changePasswordToken}` });
+    await db("change-password-tokens").insert({ email, changePasswordToken });
+    const {error } = await resend.emails.send({
+      from: 'Acme <onboarding@resend.dev>',
+      to: [process.env.RESEND_MAIL_TO],
+      subject: 'Change password Magic Link',
+      react: template,
+    });
+
+    if (error) {
+      const isResendFailedConnectionError = error.message === 'API key is invalid';
+      return res.status(400).send(isResendFailedConnectionError ? ValidationResult.ResendConnectionError : ValidationResult.ResendUnhandledError);
+    }
+
+    res.status(200).send(ValidationResult.ForgotPasswordSuccess);
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).send(ValidationResult.ResendUnhandledError);
   }
-
-  res.status(200).send(ValidationResult.ForgotPasswordSuccess);
 });

@@ -11,7 +11,7 @@ declare module "iron-session" {
   }
 }
 
-if (!process.env.SESSION_COOKIE_SECRET) throw new Error("no SESSION_COOKIE_NAME");
+if (!process.env.SESSION_COOKIE_NAME) throw new Error("no SESSION_COOKIE_NAME");
 if (!process.env.SESSION_COOKIE_SECRET) throw new Error("no SESSION_COOKIE_SECRET");
 
 export const sessionOptions = {

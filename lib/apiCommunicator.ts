@@ -2,6 +2,7 @@ export const apiRegister = async (
   fullName: string,
   email: string,
   password: string,
+  confirmPassword: string,
 ) => {
   const res = await fetch("/api/users/register", {
     method: "POST",
@@ -12,10 +13,17 @@ export const apiRegister = async (
       fullName,
       email,
       password,
+      confirmPassword,
     }),
   });
 
-  return parseInt(await res.text());
+  const text = await res.text();
+  const parsed = parseInt(text);
+  // If parsing fails or we get a 500 error, return -1 to indicate server error
+  if (isNaN(parsed) || res.status >= 500) {
+    return -1;
+  }
+  return parsed;
 };
 
 export const apiChangePassword = async (
@@ -35,7 +43,13 @@ export const apiChangePassword = async (
     }),
   });
 
-  return parseInt(await res.text());
+  const text = await res.text();
+  const parsed = parseInt(text);
+  // If parsing fails or we get a 500 error, return -1 to indicate server error
+  if (isNaN(parsed) || res.status >= 500) {
+    return -1;
+  }
+  return parsed;
 };
 
 export const apiLogin = async (email: string, password: string) => {
@@ -66,7 +80,13 @@ export const apiForgotPassword = async (
     }),
   });
 
-  return parseInt(await res.text());
+  const text = await res.text();
+  const parsed = parseInt(text);
+  // If parsing fails or we get a 500 error, return -1 to indicate server error
+  if (isNaN(parsed) || res.status >= 500) {
+    return -1;
+  }
+  return parsed;
 };
 
 export const apiLogout = async () => {

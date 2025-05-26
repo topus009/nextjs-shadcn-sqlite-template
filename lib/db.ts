@@ -19,9 +19,7 @@ export const getUsers = () => db("users").select('id', 'email', 'fullName', 'ava
 export const getUser = (email: string) => db("users").where("email", email);
 
 export async function initializeTables() {
-  await db.schema.dropTableIfExists("users");
-  await db.schema.dropTableIfExists("change-password-tokens");
-
+  // Only create tables if they don't exist (don't drop existing data)
   if (!(await db.schema.hasTable("users"))) {
     await db.schema.createTable("users", (table) => {
       table.increments("id", {
@@ -44,4 +42,11 @@ export async function initializeTables() {
       table.string("changePasswordToken").notNullable();
     });
   }
+}
+
+// Separate function for development - completely resets database
+export async function resetDatabase() {
+  await db.schema.dropTableIfExists("users");
+  await db.schema.dropTableIfExists("change-password-tokens");
+  await initializeTables();
 }

@@ -90,6 +90,14 @@ export async function loginFormAction(
           path: ['email'],
         },
       ])
+    } else if (status === -1) {
+      throw new z.ZodError([
+        {
+          code: z.ZodIssueCode.custom,
+          message: 'Server error. Please try again.',
+          path: ['email'],
+        },
+      ])
     } else {
       throw new z.ZodError([
         {
@@ -131,13 +139,55 @@ export async function registerFormAction(
 
   try {
     const data = registerFormSchema.parse(Object.fromEntries(formData))
-    const response = await apiRegister(data.fullName, data.email, data.password);
+    const response = await apiRegister(data.fullName, data.email, data.password, data.confirmPassword);
 
     if (response === ValidationResult.TakenEmail) {
       throw new z.ZodError([
         {
           code: z.ZodIssueCode.custom,
           message: 'Email already exists',
+          path: ['email'],
+        },
+      ])
+    }
+
+    if (response === ValidationResult.InvalidPassword) {
+      throw new z.ZodError([
+        {
+          code: z.ZodIssueCode.custom,
+          message: 'Passwords do not match',
+          path: ['confirmPassword'],
+        },
+      ])
+    }
+
+    if (response === ValidationResult.NotAllFieldsPassed) {
+      throw new z.ZodError([
+        {
+          code: z.ZodIssueCode.custom,
+          message: 'All fields are required',
+          path: ['email'],
+        },
+      ])
+    }
+
+    // Handle server errors (when apiRegister returns -1 due to 500 error)
+    if (response === -1) {
+      throw new z.ZodError([
+        {
+          code: z.ZodIssueCode.custom,
+          message: 'Server error. Please try again.',
+          path: ['email'],
+        },
+      ])
+    }
+
+    // Only treat ValidationResult.None (0) as success
+    if (response !== ValidationResult.None) {
+      throw new z.ZodError([
+        {
+          code: z.ZodIssueCode.custom,
+          message: 'Registration failed. Please try again.',
           path: ['email'],
         },
       ])

@@ -1,4 +1,4 @@
-import { db, getUsers, initializeTables } from "../lib/db";
+import { db, getUsers, resetDatabase } from "../lib/db";
 import fs from "fs/promises";
 import { sealData } from "iron-session";
 import {sessionOptions} from "../lib/withSession";
@@ -7,7 +7,7 @@ import {sessionOptions} from "../lib/withSession";
   try { await fs.mkdir("./databases/"); } catch {}
   try { await fs.rm("./databases/database.db"); } catch {}
 
-  await initializeTables();
+  await resetDatabase();
 
   const adminData = await sealData('AdminAdmin', sessionOptions);
   const userData = await sealData('UserUser', sessionOptions);

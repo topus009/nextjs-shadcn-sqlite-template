@@ -9,7 +9,7 @@ export const useUserContext = (propsUser?: User | null) => {
 
   useEffect(() => {
     if (propsUser && (isInitialUser || isAnotherUserLoggedIn)) context.setUser(propsUser);
-  }, [isInitialUser, isAnotherUserLoggedIn, propsUser]);
+  }, [isInitialUser, isAnotherUserLoggedIn, propsUser, context]);
 
   if (context === undefined) {
     throw new Error('useUser must be used within a UserProvider');
