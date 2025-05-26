@@ -20,6 +20,10 @@ export default withSessionRoute(async (req, res) => {
   } else if (body.token) {
     const tokenItem = await db("change-password-tokens").where("changePasswordToken", body.token).first();
     if (!tokenItem) return res.status(400).send(ValidationResult.InvalidChangePasswordToken);
+
+    const userToUpdate = await getUser(tokenItem.email).first();
+    if (!userToUpdate) return res.status(400).send(ValidationResult.UserNotFound);
+
     updated = await getUser(tokenItem.email).first().update({ password });
     await db("change-password-tokens").where('email', tokenItem.email).del();
   }

@@ -71,15 +71,33 @@ export async function loginFormAction(
 
   try {
     const data = loginFormSchema.parse(Object.fromEntries(formData))
-    await apiLogin(data.email, data.password)
+    const status = await apiLogin(data.email, data.password)
 
-    return {
-      defaultValues: {
-        email: '',
-        password: '',
-      },
-      success: true,
-      errors: null,
+    if (status === 200) {
+      return {
+        defaultValues: {
+          email: '',
+          password: '',
+        },
+        success: true,
+        errors: null,
+      }
+    } else if (status === 403) {
+      throw new z.ZodError([
+        {
+          code: z.ZodIssueCode.custom,
+          message: 'Wrong email or password',
+          path: ['email'],
+        },
+      ])
+    } else {
+      throw new z.ZodError([
+        {
+          code: z.ZodIssueCode.custom,
+          message: 'An error occurred during login',
+          path: ['email'],
+        },
+      ])
     }
   } catch (error) {
     if (error instanceof z.ZodError) {

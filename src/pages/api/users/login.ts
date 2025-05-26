@@ -9,6 +9,12 @@ export default withSessionRoute(async (req, res) => {
   }
 
   const user = await getUser(req.body.email).first() as User;
+
+  if (!user) {
+    res.status(403).send("Wrong email or password");
+    return;
+  }
+
   const userPassword = await unsealData(user.password, sessionOptions)
 
   if (userPassword !== req.body.password) {
