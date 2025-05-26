@@ -7,7 +7,6 @@ import {
   UserPlus,
   MessageCircleMore,
   Home,
-  Bug,
   LogIn,
   Key,
   HelpCircle,
@@ -33,11 +32,6 @@ const items = [
     label: 'Home',
     value: '/',
     icon: Home,
-  },
-  {
-    label: 'Bugs',
-    value: '/bugs',
-    icon: Bug,
   },
   {
     label: 'Feedback',

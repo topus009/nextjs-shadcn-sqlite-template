@@ -12,6 +12,10 @@ const items = [
     label: 'Bugs',
     value: 'bugs',
   },
+    {
+    label: 'Bugs2',
+    value: 'bugs2',
+  },
 ]
 
 export const NavMenu = (props: NavigationMenuProps) => {
